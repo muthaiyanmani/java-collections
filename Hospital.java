@@ -62,44 +62,44 @@ public class Hospital {
     public Hospital() {
     }
 
-    public Hospital(int doctor, int patient) {
-        doctors = doctor;
-        patients = patient;
+    public Hospital(int doctors, int patients) {
+        this.doctors = doctors;
+        this.patients = patients;
     }
-
-    String getTime(String when) {
+    
+    String validateInput(String regex, String message) {
         while (true) {
-            System.out.print(when + " Time: ");
-            String time = sc.nextLine();
-            if (time.matches("[0-1][0-9]\\s[0-5][0-9]\\s[AP][M]")) {
-                return time;
+            String str = sc.nextLine();
+            if (str.matches(regex)) {
+                return str;
             } else {
-                System.out.println("Invalid Time..");
+                System.out.print("Invalid Input..\n" + message);
             }
-            System.out.println(time);
         }
     }
 
     void getInput() {
         System.out.print("No of doctors : ");
-        doctors = sc.nextInt();
+        doctors = Integer.parseInt(validateInput("[0-9]+", "Enter a Integer value : "));
         System.out.print("No of patients : ");
-        patients = sc.nextInt();
+        patients = Integer.parseInt(validateInput("[0-9]+", "Enter a Integer value : "));
 
         for (int i = 0; i < patients; i++) {
-
             System.out.print("Doctor Number: ");
-            String doctorNo = sc.next();
-            sc.nextLine();
-
-            String startTime = getTime("Start");
-            String endTime = getTime("End");
+            String doctorNo = validateInput("[a-zA-Z0-9]+", "Enter a Proper value : ");
+           
+            System.out.print("Start Time: ");
+            String startTime = validateInput("[0-1][0-9]\\s[0-5][0-9]\\s[AP][M]", "Enter a start time format value ex.[11 50 PM]: ");
+            System.out.print("End Time: ");
+            String endTime = validateInput("[0-1][0-9]\\s[0-5][0-9]\\s[AP][M]", "Enter a end time format value ex.[11 50 PM]: ");
             if (calculateTime(startTime, endTime) >= 1) {
                 al.add(new Appointment(doctorNo, startTime, endTime));
             } else if (calculateTime(startTime, endTime) == 0) {
-                System.out.println("Appointment should at least one minute long.. Skipped...");
+                System.out.println("Appointment should at least one minute long..");
+                i--;
             } else {
-                System.out.println("The time will be from 00 00 AM to 11 59 PM.. Skipped..");
+                System.out.println("The time will be from 00 00 AM to 11 59 PM..");
+                i--;
             }
         }
     }
@@ -107,12 +107,11 @@ public class Hospital {
     void checkAppointment() {
         for (int i = 0; i < al.size(); i++) {
             for (int j = i + 1; j < al.size(); j++) {
-                System.out.println(i+" I J "+j);
                 Appointment a = al.get(i);
                 Appointment b = al.get(j);
 
                 if (a.getDoctorNo().equals(b.getDoctorNo())) {
-                    if (calculateTime(a.getEndTime(), b.getStartTime()) < 0){
+                    if (calculateTime(a.getEndTime(), b.getStartTime()) < 0) {
                         b.setStatus("NOT ALLOWED");
                     }
                 }
